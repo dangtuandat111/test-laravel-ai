@@ -6,12 +6,13 @@ use App\Mcp\Tools\FlightTool;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Contracts\Agent;
+use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Laravel\Ai\Responses\AgentResponse;
 use Laravel\Ai\Responses\QueuedAgentResponse;
 use Laravel\Ai\Responses\StreamableAgentResponse;
 
-class FlightAgent implements Agent
+class FlightAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
 
@@ -23,7 +24,9 @@ class FlightAgent implements Agent
     public function instructions(): string {
         return "Bạn là trợ lý đặt vé máy bay. Nhiệm vụ: Trích xuất thông tin hành trình.
                 Ngày hiện tại là " . now()->toDateString() . ".
-                Quy đổi thành phố sang mã IATA (SGN, HAN, DLI, DAD, ...).";
+                Quy đổi thành phố sang mã IATA (SGN, HAN, DLI, DAD, ...).
+                Nếu không có thông tin cần thiết, hãy trả về null cho trường đó.
+                Đối với ngày đi, nếu không có hãy lấy ngày hiện tại";
     }
 
     /**
@@ -44,11 +47,10 @@ class FlightAgent implements Agent
     public function schema(JsonSchema $schema): array
     {
         return [
-            'from' => $schema->string()->description('Mã sân bay đi (IATA)'),
-            'to' => $schema->string()->description('Mã sân bay đến (IATA)'),
-            'date' => $schema->string()->description('Ngày bay định dạng YYYY-MM-DD'),
-            'price' => $schema->number()->description('Giá vé máy bay (VND)'),
-            'airline' => $schema->string()->description('Tên hãng hàng không'),
+            'from' => $schema->string()->description('Mã sân bay đi (IATA)')->required(),
+            'to' => $schema->string()->description('Mã sân bay đến (IATA)')->required(),
+            'date' => $schema->string()->description('Ngày bay định dạng YYYY-MM-DD')->required(),
+            'price' => $schema->number()->description('Giá vé máy bay (VND)')->required()
         ];
     }
 
