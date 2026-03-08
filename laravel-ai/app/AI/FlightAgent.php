@@ -2,31 +2,37 @@
 
 namespace App\AI;
 
-use App\Mcp\Tools\FlightTool;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Contracts\Agent;
-use Laravel\Ai\Contracts\HasStructuredOutput;
+use App\Ai\Tools\FlightTool;
 use Laravel\Ai\Promptable;
 use Laravel\Ai\Responses\AgentResponse;
 use Laravel\Ai\Responses\QueuedAgentResponse;
 use Laravel\Ai\Responses\StreamableAgentResponse;
+use Laravel\Ai\Contracts\Tool;
 
-class FlightAgent implements Agent, HasStructuredOutput
+class FlightAgent implements Agent
 {
     use Promptable;
-
+    
     public function model(): string
     {
-        return 'gpt-5-mini';
+        return 'gpt-4o';
     }
-    
+
     public function instructions(): string {
-        return "Bạn là trợ lý đặt vé máy bay. Nhiệm vụ: Trích xuất thông tin hành trình.
+        return "Bạn là trợ lý đặt vé máy bay. 
+            1. Nếu khách muốn tìm thông tin chuyến bay thì:
+                Nhiệm vụ: Tìm thông tin máy bay trong database dựa trên trích xuất thông tin hành trình.
                 Ngày hiện tại là " . now()->toDateString() . ".
                 Quy đổi thành phố sang mã IATA (SGN, HAN, DLI, DAD, ...).
                 Nếu không có thông tin cần thiết, hãy trả về null cho trường đó.
-                Đối với ngày đi, nếu không có hãy lấy ngày hiện tại";
+                Đối với ngày đi, nếu không có hãy lấy ngày hiện tại. Hãy sử dụng FlightTool tool để truy cập vào database.
+                1. Tuyệt đối KHÔNG ĐƯỢC tự bịa ra thông tin chuyến bay.
+                2. Bạn BẮT BUỘC phải sử dụng 'FlightTool' để lấy dữ liệu từ Database.
+                3. Nếu 'toolCalls' rỗng, câu trả lời của bạn sẽ bị coi là sai.
+            2. Nếu muốn tìm thông tin vé thì dùng BookingTool để tra cứu thông tin đặt vé máy bay đã có trong hệ thống.
+                Nếu thiếu thông tin (ví dụ: không có tên khách) thì vẫn chạy tools để lấy toàn bộ thông tin";
     }
 
     /**
@@ -37,57 +43,7 @@ class FlightAgent implements Agent, HasStructuredOutput
     public function tools(): iterable
     {
         return [
-            new FlightTool(),
+            new \App\AI\Tools\FlightTool(),
         ];
     }
-
-    /**
-     * Get the agent's structured output schema definition.
-     */
-    public function schema(JsonSchema $schema): array
-    {
-        return [
-            'from' => $schema->string()->description('Mã sân bay đi (IATA)')->required(),
-            'to' => $schema->string()->description('Mã sân bay đến (IATA)')->required(),
-            'date' => $schema->string()->description('Ngày bay định dạng YYYY-MM-DD')->required(),
-            'price' => $schema->number()->description('Giá vé máy bay (VND)')->required()
-        ];
-    }
-
-//    public function prompt(string $prompt, array $attachments = [], ?string $provider = null, ?string $model = null): AgentResponse
-//    {
-//        // TODO: Implement prompt() method.
-//        return $this
-//            ->prompt($prompt);
-//    }
-//
-//    public function stream(string $prompt, array $attachments = [], array|string|null $provider = null, ?string $model = null): StreamableAgentResponse
-//    {
-//        // TODO: Implement stream() method.
-//        return new StreamableAgentResponse();
-//    }
-//
-//    public function queue(string $prompt, array $attachments = [], array|string|null $provider = null, ?string $model = null): QueuedAgentResponse
-//    {
-//        // TODO: Implement queue() method.
-//        return new QueuedAgentResponse();
-//    }
-//
-//    public function broadcast(string $prompt, Channel|array $channels, array $attachments = [], bool $now = false, ?string $provider = null, ?string $model = null): StreamableAgentResponse
-//    {
-//        // TODO: Implement broadcast() method.
-//        return new StreamableAgentResponse();
-//    }
-//
-//    public function broadcastNow(string $prompt, Channel|array $channels, array $attachments = [], ?string $provider = null, ?string $model = null): StreamableAgentResponse
-//    {
-//        // TODO: Implement broadcastNow() method.
-//        return new StreamableAgentResponse();
-//    }
-//
-//    public function broadcastOnQueue(string $prompt, Channel|array $channels, array $attachments = [], ?string $provider = null, ?string $model = null): QueuedAgentResponse
-//    {
-//        // TODO: Implement broadcastOnQueue() method.
-//        return new QueuedAgentResponse();
-//    }
 }

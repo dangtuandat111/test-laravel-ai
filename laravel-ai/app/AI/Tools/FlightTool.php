@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mcp\Tools;
+namespace App\AI\Tools;
 
 use App\Models\Flights;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -37,10 +37,10 @@ class FlightTool implements Tool
 
     /**
      * Handle the tool request.
-     * @param Request|\Laravel\Ai\Tools\Request $request
+     * @param Request $request
      * @return string
      */
-    public function handle(Request|\Laravel\Ai\Tools\Request $request): string
+    public function handle(Request $request): string
     {
         // 1. Log này SẼ hiện trong storage/logs/laravel.log
         \Log::emergency("=== DEMO: AI ĐÃ TRUY CẬP VÀO DATABASE QUA TOOL ===");
