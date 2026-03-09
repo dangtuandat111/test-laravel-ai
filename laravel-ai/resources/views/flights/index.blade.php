@@ -28,8 +28,8 @@
             <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-indigo-600 rounded-full"></div>
         </div>
         <div class="ml-3">
-            <h2 class="font-bold text-sm">Trợ lý BayViệt</h2>
-            <p class="text-[10px] opacity-80">Phản hồi tức thì</p>
+            <h2 class="font-bold text-sm">Assistant</h2>
+{{--            <p class="text-[10px] opacity-80">Phản hồi tức thì</p>--}}
         </div>
     </div>
 
@@ -87,12 +87,13 @@
             const response = await fetch('search-flights', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify({ query: query })
+                body: JSON.stringify({ query: query, conversationId: localStorage.getItem('conversationId') || null })
             });
 
             const result = await response.json();
 
             loader.classList.add('hidden');
+            localStorage.setItem('conversationId', result.conversationId);
 
             renderMessage('ai', result.message, result.data);
         } catch (error) {
@@ -111,6 +112,8 @@
                 flightHtml += `
                         <div class="bg-indigo-50 border border-indigo-100 p-2 rounded-lg flex justify-between items-center animate-fadeIn">
                             <span class="font-bold text-indigo-700 text-[12px]">✈️ ${flight.flight_number}</span>
+                            <span class="text-orange-600 font-bold text-[12px]">${flight.from_code}đ</span>
+                            <span class="text-orange-600 font-bold text-[12px]">${flight.to_code}đ</span>
                             <span class="text-orange-600 font-bold text-[12px]">${flight.price.toLocaleString()}đ</span>
                         </div>`;
             });
