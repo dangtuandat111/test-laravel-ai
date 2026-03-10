@@ -2,6 +2,7 @@
 
 namespace App\Ai\Agents;
 
+use Laravel\Ai\Concerns\RemembersConversations;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasTools;
@@ -11,7 +12,12 @@ use Stringable;
 
 class SalesCoach implements Agent, Conversational, HasTools
 {
-    use Promptable;
+    use Promptable, RemembersConversations;
+
+    public function model(): string
+    {
+        return 'gpt-5-mini';
+    }
 
     /**
      * Get the instructions that the agent should follow.
@@ -19,14 +25,6 @@ class SalesCoach implements Agent, Conversational, HasTools
     public function instructions(): Stringable|string
     {
         return 'You are a helpful assistant.';
-    }
-
-    /**
-     * Get the list of messages comprising the conversation so far.
-     */
-    public function messages(): iterable
-    {
-        return [];
     }
 
     /**
