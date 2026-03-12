@@ -11,6 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::ensureVectorExtensionExists();
+
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('title');

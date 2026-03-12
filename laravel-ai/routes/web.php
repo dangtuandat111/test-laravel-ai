@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AssistantController;
+use App\Http\Controllers\DocumentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlightController;
 use App\Ai\Agents\SalesCoach;
@@ -22,3 +23,7 @@ Route::post('/chat/stream', [AssistantController::class, 'store'])->name('chat.s
 //Route::post('/chat/stream', function () {
 //    return (new SalesCoach)->forUser(\App\Models\User::find(1))->stream(request('message'));
 //});
+
+
+Route::get('documents', [DocumentController::class, 'index'])->name('documents.index');
+Route::get('search', [DocumentController::class, 'search'])->name('documents.search');
