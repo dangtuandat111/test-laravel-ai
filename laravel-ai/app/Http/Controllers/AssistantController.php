@@ -15,6 +15,7 @@ class AssistantController extends Controller
     {
         return view('chat');
     }
+    
     //
     public function store(Request $request)
     {

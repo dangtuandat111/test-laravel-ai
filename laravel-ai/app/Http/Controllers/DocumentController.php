@@ -29,10 +29,11 @@ class DocumentController extends Controller
         $queryEmbedding = Embeddings::for([$query])->generate()->embeddings[0];
 
         $documents = Documents::query()
-            ->whereVectorSimilarTo('embedding', $queryEmbedding)
+            ->whereVectorSimilarTo('embedding', $queryEmbedding, 0.2)
             ->limit(10)
             ->get();
-        
+//        
+        dd($documents);
         // Retrieve all documents and calculate similarity
 //        $documents = Documents::all()->map(function ($doc) use ($queryEmbedding) {
 //            $similarity = $this->cosineSimilarity($queryEmbedding, $doc->embedding);

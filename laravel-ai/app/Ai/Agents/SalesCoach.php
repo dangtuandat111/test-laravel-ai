@@ -24,8 +24,8 @@ class SalesCoach implements Agent, Conversational, HasTools
      */
     public function instructions(): Stringable|string
     {
-        return 'You are a helpful assistant.';
-    }
+        return 'Bạn là một trợ lý đa năng. 
+        Nếu người dùng hỏi về nội dung của một tài liệu, hãy sử dụng tool FileContentRetriever để đọc nó.';    }
 
     /**
      * Get the tools available to the agent.
@@ -34,6 +34,8 @@ class SalesCoach implements Agent, Conversational, HasTools
      */
     public function tools(): iterable
     {
-        return [];
+        return [
+            new \App\Ai\Tools\FileContentRetriever(),
+        ];
     }
 }
